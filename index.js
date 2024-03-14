@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const usuarioRoutes = require('./src/routes/Usuarios'); // Assumiendo que estos archivos existen
 const faqRoutes = require('./src/routes/FAQ');
+const contactoRoutes = require('./src/routes/Contactos');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.use(express.json());
 // Rutas
 app.use('/api', usuarioRoutes);
 app.use('/api', faqRoutes);
+app.use('/api', contactoRoutes);
 
 app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
