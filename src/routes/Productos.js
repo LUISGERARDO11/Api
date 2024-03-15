@@ -26,16 +26,41 @@ router.get('/producto/:id', async (req, res) => {
 
 // Agregar un nuevo producto
 router.post('/producto', async (req, res) => {
-  const productoData = req.body;
-
-  try {
-    const nuevoProducto = new Producto(productoData);
-    const savedProducto = await nuevoProducto.save();
-    res.status(201).json(savedProducto);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creando producto' });
-  }
-});
+    const productoData = req.body;
+  
+    try {
+      // Validación de campos obligatorios
+      const requiredFields = ['nombre_producto', 'descripcion', 'color', 'precio_venta', 'costo_produccion', 'stock_disponible'];
+      for (const field of requiredFields) {
+        if (!productoData.hasOwnProperty(field)) {
+          return res.status(400).json({ message: `El campo ${field} es obligatorio.` });
+        }
+      }
+  
+      // Validación de tipos de datos
+      if (typeof productoData.nombre_producto !== 'string' || 
+          typeof productoData.descripcion !== 'string' || 
+          typeof productoData.color !== 'string' || 
+          typeof productoData.precio_venta !== 'number' || 
+          typeof productoData.costo_produccion !== 'number' || 
+          typeof productoData.stock_disponible !== 'number') {
+        return res.status(400).json({ message: 'Los tipos de datos de los campos son incorrectos.' });
+      }
+  
+      // Crear un nuevo producto
+      const nuevoProducto = new Producto(productoData);
+      const savedProducto = await nuevoProducto.save();
+      res.status(201).json(savedProducto);
+    } catch (error) {
+      // Manejo de errores específicos
+      if (error.name === 'ValidationError') {
+        const errors = Object.values(error.errors).map(err => err.message);
+        return res.status(400).json({ message: errors });
+      }
+      res.status(500).json({ message: 'Error creando producto.' });
+    }
+  });
+  
 
 // Actualizar un producto específico por _id
 router.put('/producto/:id', async (req, res) => {
