@@ -1,6 +1,7 @@
 const express = require('express');
 const esquema = require('../models/Usuarios');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 // Crear un usuario
 router.post('/usuarios', async (req, res) => {
@@ -79,5 +80,19 @@ router.delete('/usuarios/:id', async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar usuario', error });
     }
 });
+// Función para generar un token de acceso utilizando JSON Web Tokens (JWT)
+const generateAccessToken = (usuario) => {
+  // Aquí puedes personalizar la información que deseas incluir en el token
+  const payload = {
+      id: usuario._id, // ID del usuario
+      correo: usuario.correo // Correo electrónico del usuario
+  };
+  // Genera el token utilizando el ID del usuario y una clave secreta
+  // La clave secreta debe ser segura y no debe ser compartida públicamente
+  const token = jwt.sign(payload, 'claveSecreta', { expiresIn: '1h' }); // El token expirará en 1 hora
 
+  return token;
+};
+
+module.exports = generateAccessToken;
 module.exports = router;
