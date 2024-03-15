@@ -41,13 +41,16 @@ router.get('/usuarios/email/:email',(req,res)=>{
     esquema.findOne({ correo, contrasenia })
       .then(usuario => {
         if (usuario) {
-          res.json({ message: 'Inicio de sesión exitoso', usuario });
+          // Si el usuario existe y las credenciales son correctas, se devuelve un objeto con el token de acceso
+          res.json({ success: true, accessToken: generateAccessToken(usuario) });
         } else {
-          res.status(404).json({ message: 'Correo electrónico o contraseña incorrectos' });
+          // Si las credenciales son incorrectas o el usuario no existe, se devuelve un mensaje de error
+          res.status(404).json({ success: false, message: 'Correo electrónico o contraseña incorrectos' });
         }
       })
-      .catch(error => res.status(500).json({ message: 'Error al buscar usuario', error }));
+      .catch(error => res.status(500).json({ success: false, message: 'Error al buscar usuario', error }));
   });
+
 
   // Eliminar usuario por ID
 router.delete('/usuarios/:id', (req, res) => {
