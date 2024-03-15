@@ -49,4 +49,20 @@ router.get('/usuarios/email/:email',(req,res)=>{
       .catch(error => res.status(500).json({ message: 'Error al buscar usuario', error }));
   });
 
+  // Eliminar usuario por ID
+router.delete('/usuarios/:id', (req, res) => {
+    const { id } = req.params;
+
+    esquema.findByIdAndDelete(id)
+        .then(data => {
+            if (data) {
+                res.json({ message: 'Usuario eliminado correctamente', usuarioEliminado: data });
+            } else {
+                res.status(404).json({ message: 'No se encontró ningún usuario con el ID proporcionado' });
+            }
+        })
+        .catch(error => res.status(500).json({ message: 'Error al eliminar usuario', error }));
+});
+
+
 module.exports=router
