@@ -6,6 +6,7 @@ const usuarioRoutes = require('./src/routes/Usuarios'); // Assumiendo que estos 
 const faqRoutes = require('./src/routes/FAQ');
 const contactoRoutes = require('./src/routes/Contactos');
 const productoRoutes = require('./src/routes/Productos');
+const politicaRoutes = require('./src/routes/Politicas');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use('/api', usuarioRoutes);
 app.use('/api', faqRoutes);
 app.use('/api', contactoRoutes);
 app.use('/api', productoRoutes);
+app.use('/api', politicaRoutes);
 
 app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
