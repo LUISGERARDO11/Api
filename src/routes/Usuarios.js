@@ -34,7 +34,7 @@ router.get('/usuarios/email/:email',(req,res)=>{
       .catch(error => res.json({message:error}))
   })
   
-
+//Login
   router.post('/usuarios/login', (req, res) => {
     const { correo, contrasenia } = req.body;
   
@@ -62,6 +62,37 @@ router.delete('/usuarios/:id', (req, res) => {
             }
         })
         .catch(error => res.status(500).json({ message: 'Error al eliminar usuario', error }));
+});
+// Actualizar todos los campos de la dirección
+router.put('/usuarios/direccion/:id', (req, res) => {
+  const { id } = req.params;
+  const newDireccion = req.body;
+
+  esquema.findByIdAndUpdate(id, { direccion: newDireccion }, { new: true })
+      .then(updatedUser => {
+          if (updatedUser) {
+              res.json({ message: 'Dirección actualizada correctamente', usuarioActualizado: updatedUser });
+          } else {
+              res.status(404).json({ message: 'No se encontró ningún usuario con el ID proporcionado' });
+          }
+      })
+      .catch(error => res.status(500).json({ message: 'Error al actualizar dirección del usuario', error }));
+});
+
+// Actualizar nombre, teléfono y correo
+router.put('/usuarios/datos/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre, telefono, correo } = req.body;
+
+  esquema.findByIdAndUpdate(id, { nombre, telefono, correo }, { new: true })
+      .then(updatedUser => {
+          if (updatedUser) {
+              res.json({ message: 'Nombre, teléfono y correo actualizados correctamente', usuarioActualizado: updatedUser });
+          } else {
+              res.status(404).json({ message: 'No se encontró ningún usuario con el ID proporcionado' });
+          }
+      })
+      .catch(error => res.status(500).json({ message: 'Error al actualizar nombre, teléfono y correo del usuario', error }));
 });
 
 
