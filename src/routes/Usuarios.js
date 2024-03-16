@@ -82,9 +82,9 @@ router.put('/usuarios/direccion/:id', (req, res) => {
 // Actualizar nombre, teléfono y correo
 router.put('/usuarios/datos/:id', (req, res) => {
   const { id } = req.params;
-  const { nombre, telefono, correo } = req.body;
+  const { nombre_completo, telefono, correo } = req.body;
 
-  esquema.findByIdAndUpdate(id, { nombre, telefono, correo }, { new: true })
+  esquema.findByIdAndUpdate(id, { nombre_completo, telefono, correo }, { new: true })
       .then(updatedUser => {
           if (updatedUser) {
               res.json({ message: 'Nombre, teléfono y correo actualizados correctamente', usuarioActualizado: updatedUser });
