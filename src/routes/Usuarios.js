@@ -26,13 +26,15 @@ router.get('/usuarios/:id',(req,res)=>{
     .catch(error=>res.json({message:error}))
 })
 
-//busqueda por elmail
-router.get('/usuarios/email/:email',(req,res)=>{
-    const {correo} = req.params
-    esquema.findOne({ correo })
+
+// Búsqueda por correo electrónico
+router.get('/usuarios/email/:correo', (req, res) => {
+    const { correo } = req.params; // Utiliza el nombre de la variable como "correo"
+    esquema.findOne({ correo }) // Utiliza la variable "correo" para realizar la búsqueda
       .then(data => res.json(data))
-      .catch(error => res.json({message:error}))
-  })
+      .catch(error => res.json({ message: error }));
+  });
+  
   
 //Login
   router.post('/usuarios/login', (req, res) => {
