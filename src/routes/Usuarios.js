@@ -28,8 +28,8 @@ router.get('/usuarios/:id',(req,res)=>{
 
 //busqueda por elmail
 router.get('/usuarios/email/:email',(req,res)=>{
-    const {email} = req.params
-    esquema.findOne({ email })
+    const {correo} = req.params
+    esquema.findOne({ correo })
       .then(data => res.json(data))
       .catch(error => res.json({message:error}))
   })
