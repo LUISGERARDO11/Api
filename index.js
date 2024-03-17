@@ -46,7 +46,7 @@ const enviarCorreo = async (destinatario, asunto, cuerpo) => {
     // Configurar el transporte de correo
     const transporter = nodemailer.createTransport({
       host: 'smtp.elasticemail.com',
-      port: 587, // Puerto SMTP de Elastic Email
+      port: 2525, // Puerto SMTP de Elastic Email
       secure: false, // true para SSL, false para TLS
       auth: {
         user: process.env.EMAIL_USER,
