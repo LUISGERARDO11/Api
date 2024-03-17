@@ -27,14 +27,17 @@ router.get('/usuarios/:id',(req,res)=>{
 })
 
 
-// Búsqueda por correo electrónico
 router.get('/usuarios/email/:correo', (req, res) => {
-    const { correo } = req.params; // Utiliza el nombre de la variable como "correo"
-    esquema.findOne({ correo }) // Utiliza la variable "correo" para realizar la búsqueda
-      .then(data => res.json(data))
+    const { correo } = req.params;
+    esquema.findOne({ correo })
+      .then(data => {
+        // Verifica si se encontró un usuario con el correo proporcionado
+        const exists = data !== null;
+        res.json({ exists }); // Devuelve un objeto con la propiedad "exists"
+      })
       .catch(error => res.json({ message: error }));
-  });
-  
+});
+
   
 //Login
   router.post('/usuarios/login', (req, res) => {
