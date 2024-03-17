@@ -88,7 +88,7 @@ router.delete('/producto/:id', async (req, res) => {
 });
 
 //obtiene los primeros 3 productos agregados
-router.get('/productos/primeros', async (req, res) => {
+router.get('/producto/primeros', async (req, res) => {
   try {
     const productos = await Producto.find().limit(3);
     res.json(productos);
@@ -98,7 +98,7 @@ router.get('/productos/primeros', async (req, res) => {
 });
 
 //obtiene los ultimos 3 productos agregados, los más recientes
-router.get('/productos/ultimos', async (req, res) => {
+router.get('/producto/ultimos', async (req, res) => {
   try {
     const productos = await Producto.find().sort({ _id: -1 }).limit(3);
     res.json(productos);
