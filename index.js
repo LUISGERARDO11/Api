@@ -62,7 +62,7 @@ const enviarCorreo = async (destinatario, asunto, cuerpo) => {
 };
 
 // Ejemplo de uso
-app.post('/enviar-correo', async (req, res) => {
+app.post('/enviarcorreo', async (req, res) => {
   const { destinatario, asunto, cuerpo } = req.body;
   if (!destinatario || !asunto || !cuerpo) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
