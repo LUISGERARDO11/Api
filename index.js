@@ -38,41 +38,47 @@ mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers' })
 
 // Función para enviar correo electrónico
 const enviarCorreo = async (destinatario, asunto, cuerpo) => {
-  const transporter = nodemailer.createTransport({
-    service: 'smtp.elasticemail.com',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD
+    // Configurar el transporte de correo
+    const transporter = nodemailer.createTransport({
+        service: 'smtp.elasticemail.com',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD // Cambiar por tu contraseña de correo electrónico
+        }
+    });
+
+    // Opciones del correo
+    const mailOptions = {
+        from: process.env.EMAIL_USER, // Cambiar por tu dirección de correo electrónico
+        to: destinatario,
+        subject: asunto,
+        text: cuerpo
+    };
+
+    try {
+        // Enviar el correo electrónico
+        await transporter.sendMail(mailOptions);
+        console.log('Correo electrónico enviado con éxito a', destinatario);
+    } catch (error) {
+        console.error('Error al enviar correo electrónico:', error);
+        throw error;
     }
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: destinatario,
-    subject: asunto,
-    text: cuerpo
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log('Correo electrónico enviado con éxito a', destinatario);
-  } catch (error) {
-    console.error('Error al enviar correo electrónico:', error);
-  }
 };
 
-// Ejemplo de uso
+// Endpoint para enviar correo electrónico
 app.post('/enviarcorreo', async (req, res) => {
-  const { destinatario, asunto, cuerpo } = req.body;
-  if (!destinatario || !asunto || !cuerpo) {
-    return res.status(400).json({ error: 'Faltan datos requeridos' });
-  }
+    const { destinatario, asunto, cuerpo } = req.body;
 
-  try {
-    await enviarCorreo(destinatario, asunto, cuerpo);
-    res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
-  } catch (error) {
-    console.error('Error al enviar correo electrónico:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
+    if (!destinatario || !asunto || !cuerpo) {
+        return res.status(400).json({ error: 'Faltan datos requeridos' });
+    }
+
+    try {
+        // Enviar correo electrónico
+        await enviarCorreo(destinatario, asunto, cuerpo);
+        res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
+    } catch (error) {
+        console.error('Error al enviar correo electrónico:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 });
