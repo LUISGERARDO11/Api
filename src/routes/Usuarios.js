@@ -38,6 +38,21 @@ router.get('/usuarios/email/:correo', (req, res) => {
       .catch(error => res.status(500).json({ message: error }));
 });
 
+// Método para verificar si hay un documento con el correo, pregunta secreta y respuesta secreta
+router.post('/usuarios/verify', (req, res) => {
+    const { correo, pregunta_secreta, respuesta_secreta } = req.body;
+
+    esquema.findOne({ correo, pregunta_secreta, respuesta_secreta })
+        .then(usuario => {
+            if (usuario) {
+                res.json({ exists: true });
+            } else {
+                res.json({ exists: false });
+            }
+        })
+        .catch(error => res.status(500).json({ message: 'Error al buscar usuario', error }));
+});
+
   
 //Login
   router.post('/usuarios/login', (req, res) => {
