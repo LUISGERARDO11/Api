@@ -33,9 +33,9 @@ router.get('/usuarios/email/:correo', (req, res) => {
       .then(data => {
         // Verifica si se encontró un usuario con el correo proporcionado
         const exists = data !== null;
-        res.json({ exists }); // Devuelve un objeto con la propiedad "exists"
+        res.json({ exists, data }); // Devuelve un objeto con la propiedad "exists" y los datos del usuario
       })
-      .catch(error => res.json({ message: error }));
+      .catch(error => res.status(500).json({ message: error }));
 });
 
   
