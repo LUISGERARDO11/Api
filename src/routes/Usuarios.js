@@ -30,7 +30,7 @@ router.post('/usuarios', async (req, res) => {
 //leer usuarios
 router.get('/usuarios', async (req, res) => {
     try {
-        const usuarios = await esquema.find({}, '-contrasenia -pregunta_secreta -respuesta_secreta -token_acceso');
+        const usuarios = await esquema.find({}, '-contrasenia -pregunta_secreta -respuesta_secreta');
         res.json(usuarios);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener usuarios', error: error.message });
