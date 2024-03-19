@@ -71,19 +71,33 @@ router.post('/usuarios/verify', (req, res) => {
 
   
 //Login
-  router.post('/usuarios/login', (req, res) => {
+router.post('/usuarios/login', async (req, res) => {
     const { correo, contrasenia } = req.body;
-  
-    esquema.findOne({ correo, contrasenia })
-      .then(usuario => {
+
+    try {
+        // Buscar el usuario por correo electrónico
+        const usuario = await esquema.findOne({ correo });
+
         if (usuario) {
-          res.json({ message: 'Inicio de sesión exitoso', usuario });
+            // Comparar la contraseña proporcionada con la contraseña encriptada almacenada
+            const contraseñaValida = await bcrypt.compare(contrasenia, usuario.contrasenia);
+
+            if (contraseñaValida) {
+                // La contraseña es válida, inicio de sesión exitoso
+                res.json({ message: 'Inicio de sesión exitoso', usuario });
+            } else {
+                // Contraseña incorrecta
+                res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos' });
+            }
         } else {
-          res.status(404).json({ message: 'Correo electrónico o contraseña incorrectos' });
+            // No se encontró ningún usuario con el correo electrónico proporcionado
+            res.status(404).json({ message: 'Correo electrónico o contraseña incorrectos' });
         }
-      })
-      .catch(error => res.status(500).json({ message: 'Error al buscar usuario', error }));
-  });
+    } catch (error) {
+        // Error al buscar usuario en la base de datos
+        res.status(500).json({ message: 'Error al buscar usuario', error });
+    }
+});
 
   // Eliminar usuario por ID
 router.delete('/usuarios/:id', (req, res) => {
