@@ -28,11 +28,15 @@ router.post('/usuarios', async (req, res) => {
 });
 
 //leer usuarios
-router.get('/usuarios',(req,res)=>{
-    esquema.find()
-    .then(data=>res.json(data))
-    .catch(error=>res.json({message:error}))
-})
+router.get('/usuarios', async (req, res) => {
+    try {
+        const usuarios = await esquema.find({}, '-contrasenia -pregunta_secreta -respuesta_secreta -token_acceso');
+        res.json(usuarios);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener usuarios', error: error.message });
+    }
+});
+
 
 //buscar usuario
 router.get('/usuarios/:id',(req,res)=>{
@@ -43,16 +47,23 @@ router.get('/usuarios/:id',(req,res)=>{
 })
 
 
-router.get('/usuarios/email/:correo', (req, res) => {
+router.get('/usuarios/email/:correo', async (req, res) => {
     const { correo } = req.params;
-    esquema.findOne({ correo })
-      .then(data => {
-        // Verifica si se encontró un usuario con el correo proporcionado
-        const exists = data !== null;
-        res.json({ exists, data }); // Devuelve un objeto con la propiedad "exists" y los datos del usuario
-      })
-      .catch(error => res.status(500).json({ message: error }));
+
+    try {
+        // Buscar el usuario por correo electrónico
+        const usuario = await esquema.findOne({ correo });
+
+        // Verificar si se encontró un usuario con el correo proporcionado
+        const exists = usuario !== null;
+
+        // Devolver un objeto con la propiedad "exists"
+        res.json({ exists });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al buscar usuario', error: error.message });
+    }
 });
+
 
 // Método para verificar si hay un documento con el correo, pregunta secreta y respuesta secreta
 router.post('/usuarios/verify', (req, res) => {
