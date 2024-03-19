@@ -41,17 +41,17 @@ app.get('/', (req, res) => {
 
 
 app.post('/api/enviarcorreo', (req, res) => {
-  const { nombre, apellido, correo, telefono, mensaje } = req.body;
+  const { nombre, apellido, correo } = req.body;
 
   // Cuerpo del correo
   const body = `Hola ${nombre} ${apellido}, hemos recibido tu mensaje. En breve nos pondremos en contacto contigo.`;
 
   // Opciones del correo
   const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: correo,
-    subject: 'Mensaje recibido',
-    text: body
+    From: process.env.EMAIL_USER,
+    To: correo,
+    Subject: 'Mensaje recibido',
+    Text: body
   };
 
   // Enviar el correo
@@ -59,7 +59,7 @@ app.post('/api/enviarcorreo', (req, res) => {
     if (error) {
       console.error('Error al enviar el correo:', error.message);
       console.error('Detalles completos del error:', error);
-      res.status(500).json({ message: 'Error al enviar el correo' });
+      res.status(500).json({ message: 'Error al enviar el correo', error });
     } else {
       console.log('Correo enviado con éxito:', info.response);
       res.status(200).json({ message: 'Correo enviado con éxito', messageId: info.messageId });
