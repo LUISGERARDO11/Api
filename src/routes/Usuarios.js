@@ -57,7 +57,7 @@ router.get('/usuarios/email/:correo', async (req, res) => {
         // Verificar si se encontró un usuario con el correo proporcionado
         if (usuario) {
             // Si el usuario existe, devolver la pregunta secreta y el _id junto con exists
-            res.json({ exists: true, pregunta_secreta: usuario.pregunta_secreta, _id: usuario._id });
+            res.json({ exists: true, pregunta_secreta: usuario.pregunta_secreta, _id: usuario._id,token:usuario.token_acceso });
         } else {
             // Si el usuario no existe, simplemente devolver exists como false
             res.json({ exists: false });

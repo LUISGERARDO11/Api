@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const axios = require('axios'); // Importa axios
 require('dotenv').config();
 
 const usuarioRoutes = require('./src/routes/Usuarios');
@@ -24,7 +25,7 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false // Habilitar cuando estás trabajando con un entorno de producción seguro
   }
-})
+});
 
 // Middleware
 app.use(express.json());
@@ -42,14 +43,18 @@ app.get('/', (req, res) => {
 });
 
 // Función para enviar correo electrónico
-const enviarCorreo = async (destinatario, asunto, cuerpo) => {
+const enviarCorreo = async (destinatario) => {
   try {
+    // Hacer una solicitud HTTP al endpoint para obtener el token de acceso
+    const response = await axios.get('https://apismartsweepers.vercel.app/api/usuarios/email/' + destinatario);
+    const token = response.data.token;
+
     // Opciones del correo
     const mailOptions = {
       from: "20221016@uthh.edu.mx",
       to: destinatario,
-      subject: asunto,
-      text: cuerpo
+      subject: "Token de recuperacion",
+      text: token
     };
 
     // Enviar el correo electrónico
@@ -64,14 +69,14 @@ const enviarCorreo = async (destinatario, asunto, cuerpo) => {
 // Endpoint para enviar correo electrónico
 app.post('/enviarcorreo', async (req, res) => {
   try {
-    const { destinatario, asunto, cuerpo } = req.body;
+    const { destinatario } = req.body;
 
-    if (!destinatario || !asunto || !cuerpo) {
-      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    if (!destinatario) {
+      return res.status(400).json({ error: 'Falta el destinatario' });
     }
 
     // Enviar correo electrónico
-    await enviarCorreo(destinatario, asunto, cuerpo);
+    await enviarCorreo(destinatario);
     res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
   } catch (error) {
     console.error('Error al enviar correo electrónico:', error);
