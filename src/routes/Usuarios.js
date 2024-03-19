@@ -75,7 +75,7 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$
 
 router.put('/usuarios/actualizarcontrasena/:id', async (req, res) => {
     const { id } = req.params;
-    const { nuevaContrasena } = req.body;
+    const { nuevaContrasena, token_acceso } = req.body;
 
     try {
         // Validar que la nueva contraseña cumple con los requisitos
@@ -87,7 +87,7 @@ router.put('/usuarios/actualizarcontrasena/:id', async (req, res) => {
         const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
 
         // Actualizar la contraseña del usuario en la base de datos
-        const usuarioActualizado = await esquema.findByIdAndUpdate(id, { contrasenia: hashedPassword }, { new: true });
+        const usuarioActualizado = await esquema.findByIdAndUpdate(id, { contrasenia: hashedPassword, token_acceso:token_acceso }, { new: true });
 
         if (usuarioActualizado) {
             res.json({ success: true, message: 'Contraseña actualizada correctamente' });
