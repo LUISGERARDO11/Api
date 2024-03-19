@@ -12,17 +12,16 @@ const politicaRoutes = require('./src/routes/Politicas');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configuración del transporte SMTP
+// Configuración del transporte SMTP para Gmail
 const transporter = nodemailer.createTransport({
-  host: 'smtp.elasticemail.com',
-  port: 2525, // Puerto SMTP
+  host: 'smtp.gmail.com',
+  port: 587, // Puerto SMTP de Gmail
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
-    Username: "20221016@uthh.edu.mx", // Usuario SMTP
-    Password: "0E5DB25C714ADB3E3BDAF90EAE14459BF762" // Contraseña SMTP
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
   }
 });
-
 
 // Middleware
 app.use(express.json());
@@ -39,34 +38,43 @@ app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
 });
 
+// Función para enviar correo electrónico
+const enviarCorreo = async (destinatario, asunto, cuerpo) => {
+  try {
+    // Opciones del correo
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: destinatario,
+      subject: asunto,
+      text: cuerpo
+    };
 
-app.post('/api/enviarcorreo', (req, res) => {
-  const { nombre, apellido, correo } = req.body;
+    // Enviar el correo electrónico
+    await transporter.sendMail(mailOptions);
+    console.log('Correo electrónico enviado con éxito a', destinatario);
+  } catch (error) {
+    console.error('Error al enviar correo electrónico:', error);
+    throw error;
+  }
+};
 
-  // Cuerpo del correo
-  const body = `Hola ${nombre} ${apellido}, hemos recibido tu mensaje. En breve nos pondremos en contacto contigo.`;
+// Endpoint para enviar correo electrónico
+app.post('/enviarcorreo', async (req, res) => {
+  try {
+    const { destinatario, asunto, cuerpo } = req.body;
 
-  // Opciones del correo
-  const mailOptions = {
-    From: "20221016@uthh.edu.mx",
-    To: correo,
-    Subject: 'Mensaje recibido',
-    Text: body
-  };
-
-  // Enviar el correo
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error al enviar el correo:', error.message);
-      console.error('Detalles completos del error:', error);
-      res.status(500).json({ message: 'Error al enviar el correo', error });
-    } else {
-      console.log('Correo enviado con éxito:', info.response);
-      res.status(200).json({ message: 'Correo enviado con éxito', messageId: info.messageId });
+    if (!destinatario || !asunto || !cuerpo) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
     }
-  });  
-});
 
+    // Enviar correo electrónico
+    await enviarCorreo(destinatario, asunto, cuerpo);
+    res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
+  } catch (error) {
+    console.error('Error al enviar correo electrónico:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers', useNewUrlParser: true, useUnifiedTopology: true })
@@ -80,5 +88,3 @@ mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers', useNewUrl
     console.error('Error al conectar a MongoDB:', error);
     process.exit(1); // Detener la ejecución de la aplicación en caso de error
   });
-
-
