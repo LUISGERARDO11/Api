@@ -68,11 +68,21 @@ router.get('/usuarios/email/:correo', async (req, res) => {
 });
 
 
+
+// Expresión regular para verificar que la contraseña cumple con los requisitos
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+
 router.put('/usuarios/actualizarcontrasena/:id', async (req, res) => {
     const { id } = req.params;
     const { nuevaContrasena } = req.body;
 
     try {
+        // Validar que la nueva contraseña cumple con los requisitos
+        if (!passwordRegex.test(nuevaContrasena)) {
+            return res.status(400).json({ success: false, message: 'La nueva contraseña no cumple con los requisitos' });
+        }
+
         // Encriptar la nueva contraseña antes de almacenarla en la base de datos
         const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
 
