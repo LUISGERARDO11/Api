@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const cors = require('cors');
+
 
 const usuarioRoutes = require('./src/routes/Usuarios');
 const faqRoutes = require('./src/routes/FAQ');
@@ -29,6 +31,7 @@ const transporter = nodemailer.createTransport({
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors()); // Usa CORS en todas las rutas
 
 // Rutas
 app.use('/api', usuarioRoutes);
