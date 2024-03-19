@@ -46,11 +46,14 @@ const enviarCorreo = async (destinatario, token) => {
 
   try {
     // Opciones del correo
+
+    const body = `Hola, has recibido un correo electrónico con el token: ${token}`;
+
     const mailOptions = {
       from: "20221016@uthh.edu.mx",
       to: destinatario,
-      subject: "Token de recuperacion",
-      text: "hola, tu token es:" + token,
+      subject: 'Correo con token',
+      text: body
     };
 
     // Enviar el correo electrónico
