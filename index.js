@@ -18,8 +18,8 @@ const transporter = nodemailer.createTransport({
   port: 2525, // Puerto SMTP
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
-    user: process.env.EMAIL_USER, // Usuario SMTP
-    pass: process.env.EMAIL_PASSWORD // Contraseña SMTP
+    Username: "20221016@uthh.edu.mx", // Usuario SMTP
+    Password: "0E5DB25C714ADB3E3BDAF90EAE14459BF762" // Contraseña SMTP
   }
 });
 
@@ -48,7 +48,7 @@ app.post('/api/enviarcorreo', (req, res) => {
 
   // Opciones del correo
   const mailOptions = {
-    From: process.env.EMAIL_USER,
+    From: "20221016@uthh.edu.mx",
     To: correo,
     Subject: 'Mensaje recibido',
     Text: body
