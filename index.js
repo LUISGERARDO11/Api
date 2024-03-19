@@ -43,17 +43,25 @@ app.get('/', (req, res) => {
 
 // Función para enviar correo electrónico
 const enviarCorreo = async (destinatario, token) => {
-
   try {
     // Opciones del correo
-
-    const body = `Hola, has recibido un correo electrónico con el token: ${token}`;
+    const body = `
+      <div style="font-family: Arial, sans-serif;">
+        <h2 style="color: #043464;">Recuperación de contraseña</h2>
+        <p>Hola,</p>
+        <p>Has solicitado restablecer tu contraseña. Para continuar con el proceso, utiliza el siguiente token:</p>
+        <p style="background-color: #f2f2f2; padding: 10px; border-radius: 5px; font-weight: bold;">${token}</p>
+        <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
+        <p>Atentamente,</p>
+        <p>Tu equipo de soporte</p>
+      </div>
+    `;
 
     const mailOptions = {
       from: "20221016@uthh.edu.mx",
       to: destinatario,
-      subject: 'Correo con token',
-      text: body
+      subject: 'Recuperación de contraseña',
+      html: body
     };
 
     // Enviar el correo electrónico
@@ -64,6 +72,7 @@ const enviarCorreo = async (destinatario, token) => {
     throw error;
   }
 };
+
 
 // Endpoint para enviar correo electrónico
 app.post('/enviarcorreo', async (req, res) => {
