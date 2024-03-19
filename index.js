@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-const axios = require('axios');
 require('dotenv').config();
 
 const usuarioRoutes = require('./src/routes/Usuarios');
@@ -19,13 +18,13 @@ const transporter = nodemailer.createTransport({
   port: 587, // Puerto SMTP de Gmail
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
+    user: "20221016@uthh.edu.mx",
+    pass: "eogo ihfl xqvz tatl"
   },
   tls: {
     rejectUnauthorized: false // Habilitar cuando estás trabajando con un entorno de producción seguro
   }
-});
+})
 
 // Middleware
 app.use(express.json());
@@ -43,18 +42,15 @@ app.get('/', (req, res) => {
 });
 
 // Función para enviar correo electrónico
-const enviarCorreo = async (destinatario) => {
-  try {
-    // Hacer una solicitud HTTP al endpoint para obtener el token de acceso
-    const response = await axios.get(`https://apismartsweepers.vercel.app/api/usuarios/email/${destinatario}`);
-    const token = response.data.token;
+const enviarCorreo = async (destinatario, token) => {
 
+  try {
     // Opciones del correo
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: "20221016@uthh.edu.mx",
       to: destinatario,
       subject: "Token de recuperacion",
-      text: `Tu token de recuperación es: ${token}`
+      text: "hola, tu token es:" + token,
     };
 
     // Enviar el correo electrónico
@@ -69,23 +65,23 @@ const enviarCorreo = async (destinatario) => {
 // Endpoint para enviar correo electrónico
 app.post('/enviarcorreo', async (req, res) => {
   try {
-    const { destinatario } = req.body;
+    const { destinatario, token } = req.body;
 
-    if (!destinatario) {
-      return res.status(400).json({ error: 'Falta el destinatario' });
+    if (!destinatario || !token) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
     }
 
     // Enviar correo electrónico
-    await enviarCorreo(destinatario);
+    await enviarCorreo(destinatario, token);
     res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
   } catch (error) {
     console.error('Error al enviar correo electrónico:', error);
-    res.status(500).json({ error: 'Error interno del servidor', error: error.message });
+    res.status(500).json({ error: 'Error interno del servidor', error });
   }
 });
 
 // Conexión a MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers', useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Conectado a MongoDB');
     app.listen(port, () => {
