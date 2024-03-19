@@ -55,14 +55,18 @@ router.get('/usuarios/email/:correo', async (req, res) => {
         const usuario = await esquema.findOne({ correo });
 
         // Verificar si se encontró un usuario con el correo proporcionado
-        const exists = usuario !== null;
-
-        // Devolver un objeto con la propiedad "exists"
-        res.json({ exists });
+        if (usuario) {
+            // Si el usuario existe, devolver la pregunta secreta junto con exists
+            res.json({ exists: true, pregunta_secreta: usuario.pregunta_secreta });
+        } else {
+            // Si el usuario no existe, simplemente devolver exists como false
+            res.json({ exists: false });
+        }
     } catch (error) {
         res.status(500).json({ message: 'Error al buscar usuario', error: error.message });
     }
 });
+
 
 
 // Método para verificar si hay un documento con el correo, pregunta secreta y respuesta secreta
