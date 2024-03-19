@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
-const axios = require('axios'); // Importa axios
+const axios = require('axios');
 require('dotenv').config();
 
 const usuarioRoutes = require('./src/routes/Usuarios');
@@ -19,8 +19,8 @@ const transporter = nodemailer.createTransport({
   port: 587, // Puerto SMTP de Gmail
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
-    user: "20221016@uthh.edu.mx",
-    pass: "eogo ihfl xqvz tatl"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
   },
   tls: {
     rejectUnauthorized: false // Habilitar cuando estás trabajando con un entorno de producción seguro
@@ -46,15 +46,15 @@ app.get('/', (req, res) => {
 const enviarCorreo = async (destinatario) => {
   try {
     // Hacer una solicitud HTTP al endpoint para obtener el token de acceso
-    const response = await axios.get('https://apismartsweepers.vercel.app/api/usuarios/email/' + destinatario);
+    const response = await axios.get(`https://apismartsweepers.vercel.app/api/usuarios/email/${destinatario}`);
     const token = response.data.token;
 
     // Opciones del correo
     const mailOptions = {
-      from: "20221016@uthh.edu.mx",
+      from: process.env.EMAIL_USER,
       to: destinatario,
       subject: "Token de recuperacion",
-      text: token
+      text: `Tu token de recuperación es: ${token}`
     };
 
     // Enviar el correo electrónico
@@ -80,12 +80,12 @@ app.post('/enviarcorreo', async (req, res) => {
     res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
   } catch (error) {
     console.error('Error al enviar correo electrónico:', error);
-    res.status(500).json({ error: 'Error interno del servidor', error });
+    res.status(500).json({ error: 'Error interno del servidor', error: error.message });
   }
 });
 
 // Conexión a MongoDB
-mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers', useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Conectado a MongoDB');
     app.listen(port, () => {
