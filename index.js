@@ -12,6 +12,18 @@ const politicaRoutes = require('./src/routes/Politicas');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Configuración del transporte SMTP
+const transporter = nodemailer.createTransport({
+  host: 'smtp.elasticemail.com',
+  port: 2525, // Puerto SMTP
+  secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
+  auth: {
+    user: process.env.EMAIL_USER, // Usuario SMTP
+    pass: process.env.EMAIL_PASS // Contraseña SMTP
+  }
+});
+
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +38,34 @@ app.use('/api', politicaRoutes);
 app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
 });
+
+
+app.post('/api/enviarcorreo', (req, res) => {
+  const { nombre, apellido, correo, telefono, mensaje } = req.body;
+
+  // Cuerpo del correo
+  const body = `Hola ${nombre} ${apellido}, hemos recibido tu mensaje. En breve nos pondremos en contacto contigo.`;
+
+  // Opciones del correo
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: correo,
+    subject: 'Mensaje recibido',
+    text: body
+  };
+
+  // Enviar el correo
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error al enviar el correo:', error);
+      res.status(500).json({ message: 'Error al enviar el correo' });
+    } else {
+      console.log('Correo enviado con éxito:', info.response);
+      res.status(200).json({ message: 'Correo enviado con éxito' });
+    }
+  });
+});
+
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI, { dbName: 'smarthomesweepers', useNewUrlParser: true, useUnifiedTopology: true })
