@@ -56,8 +56,8 @@ router.get('/usuarios/email/:correo', async (req, res) => {
 
         // Verificar si se encontró un usuario con el correo proporcionado
         if (usuario) {
-            // Si el usuario existe, devolver la pregunta secreta junto con exists
-            res.json({ exists: true, pregunta_secreta: usuario.pregunta_secreta });
+            // Si el usuario existe, devolver la pregunta secreta y el _id junto con exists
+            res.json({ exists: true, pregunta_secreta: usuario.pregunta_secreta, _id: usuario._id });
         } else {
             // Si el usuario no existe, simplemente devolver exists como false
             res.json({ exists: false });
@@ -67,6 +67,27 @@ router.get('/usuarios/email/:correo', async (req, res) => {
     }
 });
 
+
+router.put('/usuarios/actualizarcontrasena/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nuevaContrasena } = req.body;
+
+    try {
+        // Encriptar la nueva contraseña antes de almacenarla en la base de datos
+        const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+
+        // Actualizar la contraseña del usuario en la base de datos
+        const usuarioActualizado = await esquema.findByIdAndUpdate(id, { contrasenia: hashedPassword }, { new: true });
+
+        if (usuarioActualizado) {
+            res.json({ success: true, message: 'Contraseña actualizada correctamente' });
+        } else {
+            res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al actualizar la contraseña', error: error.message });
+    }
+});
 
 
 // Método para verificar si hay un documento con el correo, pregunta secreta y respuesta secreta
