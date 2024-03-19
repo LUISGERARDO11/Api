@@ -46,14 +46,14 @@ const enviarCorreo = async (destinatario, token) => {
   try {
     // Opciones del correo
     const body = `
-      <div style="font-family: Arial, sans-serif;">
-        <h2 style="color: #043464;">Recuperación de contraseña</h2>
-        <p>Hola,</p>
-        <p>Has solicitado restablecer tu contraseña. Para continuar con el proceso, utiliza el siguiente token:</p>
-        <p style="background-color: #f2f2f2; padding: 10px; border-radius: 5px; font-weight: bold;">${token}</p>
+      <div style="font-family: Arial, sans-serif; color: #043464;">
+        <h2 style="color: #043464; font-weight: bold;">Recuperación de contraseña</h2>
+        <p>Hola ${destinatario}</p>
+        <p>Has solicitado restablecer tu contraseña. Por favor, utiliza el siguiente token:</p>
+        <p style="background-color: #043464; color: #ECF0F1; padding: 10px; border-radius: 5px; font-weight: bold;">${token}</p>
         <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-        <p>Atentamente,</p>
-        <p>Tu equipo de soporte</p>
+        <p style="font-weight: bold;">Atentamente,</p>
+        <p style="font-weight: bold;">Tu equipo de soporte</p>
       </div>
     `;
 
@@ -72,6 +72,7 @@ const enviarCorreo = async (destinatario, token) => {
     throw error;
   }
 };
+
 
 
 // Endpoint para enviar correo electrónico
