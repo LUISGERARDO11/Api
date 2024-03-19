@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
     user: process.env.EMAIL_USER, // Usuario SMTP
-    pass: process.env.EMAIL_PASS // Contraseña SMTP
+    pass: process.env.EMAIL_PASSWORD // Contraseña SMTP
   }
 });
 
@@ -57,13 +57,14 @@ app.post('/api/enviarcorreo', (req, res) => {
   // Enviar el correo
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error('Error al enviar el correo:', error);
+      console.error('Error al enviar el correo:', error.message);
+      console.error('Detalles completos del error:', error);
       res.status(500).json({ message: 'Error al enviar el correo' });
     } else {
       console.log('Correo enviado con éxito:', info.response);
-      res.status(200).json({ message: 'Correo enviado con éxito' });
+      res.status(200).json({ message: 'Correo enviado con éxito', messageId: info.messageId });
     }
-  });
+  });  
 });
 
 
