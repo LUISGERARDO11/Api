@@ -1,31 +1,15 @@
 const express=require('express')
-const bcrypt = require('bcrypt');
 const esquema=require('../models/Usuarios')
 
 const router=express.Router()
 
 //crear un usuario
-router.post('/usuarios', async (req, res) => {
-    try {
-        // Extraer la contraseña del cuerpo de la solicitud
-        const { contrasenia, ...userData } = req.body;
-
-        // Encriptar la contraseña
-        const hashedPassword = await bcrypt.hash(contrasenia, 10); // El segundo parámetro es el número de rondas de hashing
-
-        // Crear un nuevo objeto usuario con la contraseña encriptada
-        const usuarioNuevo = new esquema({
-            ...userData, // Utilizamos el resto de los datos del cuerpo de la solicitud
-            contrasenia: hashedPassword // Contraseña encriptada
-        });
-
-        // Guardar el usuario en la base de datos
-        const usuarioGuardado = await usuarioNuevo.save();
-        res.json(usuarioGuardado);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+router.post('/usuarios',(req,res)=>{
+    const us= esquema(req.body);
+    us.save()
+    .then(data=>res.json(data))
+    .catch(error=>res.json({message:error}))
+})
 
 //leer usuarios
 router.get('/usuarios',(req,res)=>{
