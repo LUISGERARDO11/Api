@@ -18,10 +18,13 @@ const transporter = nodemailer.createTransport({
   port: 587, // Puerto SMTP de Gmail
   secure: false, // true para usar SSL/TLS, false para usar el puerto predeterminado
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
+    user: "20221016@uthh.edu.mx",
+    pass: "eogo ihfl xqvz tatl"
+  },
+  tls: {
+    rejectUnauthorized: false // Habilitar cuando estás trabajando con un entorno de producción seguro
   }
-});
+})
 
 // Middleware
 app.use(express.json());
@@ -43,7 +46,7 @@ const enviarCorreo = async (destinatario, asunto, cuerpo) => {
   try {
     // Opciones del correo
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: "20221016@uthh.edu.mx",
       to: destinatario,
       subject: asunto,
       text: cuerpo
@@ -72,7 +75,7 @@ app.post('/enviarcorreo', async (req, res) => {
     res.status(200).json({ message: 'Correo electrónico enviado correctamente' });
   } catch (error) {
     console.error('Error al enviar correo electrónico:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: 'Error interno del servidor', error });
   }
 });
 
