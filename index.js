@@ -46,16 +46,18 @@ const enviarCorreo = async (destinatario, token) => {
   try {
     // Opciones del correo
     const body = `
-      <div style="font-family: Arial, sans-serif; color: #043464;">
-        <h2 style="color: #043464; font-weight: bold;">Recuperación de contraseña</h2>
-        <p>Hola ${destinatario}</p>
-        <p>Has solicitado restablecer tu contraseña. Por favor, utiliza el siguiente token:</p>
-        <p style="background-color: #043464; color: #ECF0F1; padding: 10px; border-radius: 5px; font-weight: bold;">${token}</p>
-        <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
-        <p style="font-weight: bold;">Atentamente,</p>
-        <p style="font-weight: bold;">Tu equipo de soporte</p>
-      </div>
-    `;
+  <div style="font-family: Arial, sans-serif; color: #043464; background-color: #ECF0F1; padding: 20px; border-radius: 10px;">
+    <h2 style="color: #043464; font-weight: bold; font-size: 24px;">Recuperación de contraseña</h2>
+    <p style="font-size: 16px;">Hola ${destinatario},</p>
+    <p style="font-size: 16px;">Has solicitado restablecer tu contraseña. Por favor, utiliza el siguiente token:</p>
+    <p style="background-color: #043464; color: #ECF0F1; padding: 10px; border-radius: 5px; font-weight: bold; font-size: 20px;">${token}</p>
+    <p style="font-size: 16px;">Si no solicitaste este cambio, puedes ignorar este correo. Sin embargo, te recomendamos que asegures la seguridad de tu cuenta.</p>
+    <p style="font-size: 16px;">Por favor, ten en cuenta que este token es válido por un tiempo limitado. Si no lo utilizas dentro de dicho período, deberás generar uno nuevo.</p>
+    <p style="font-weight: bold; font-size: 16px;">Atentamente,</p>
+    <p style="font-weight: bold; font-size: 16px;">Tu equipo de soporte</p>
+  </div>
+`;
+
 
     const mailOptions = {
       from: "20221016@uthh.edu.mx",
