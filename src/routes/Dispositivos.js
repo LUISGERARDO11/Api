@@ -29,13 +29,13 @@ router.get('/dispositivo/:id', async (req, res) => {
 
 // Agregar un nuevo dispositivo
 router.post('/dispositivo', async (req, res) => {
-  const { nombre, ubicacion, estado, usuario_id } = req.body;
+  const { clave,nombre, ubicacion, estado, usuario_id } = req.body;
 
-  if (!nombre || !ubicacion || !estado || !usuario_id) {
+  if ( !clave || !nombre || !ubicacion || !estado || !usuario_id) {
     return res.status(400).json({ message: 'Por favor, proporcione nombre, ubicacion, estado y usuario_id' });
   }
 
-  const newDispositivo = new DispositivoModel({ nombre, ubicacion, estado, usuario_id });
+  const newDispositivo = new DispositivoModel({ clave, nombre, ubicacion, estado, usuario_id });
 
   try {
     const savedDispositivo = await newDispositivo.save();
@@ -48,13 +48,13 @@ router.post('/dispositivo', async (req, res) => {
 // Actualizar un dispositivo específico por _id
 router.put('/dispositivo/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombre, ubicacion, estado, usuario_id } = req.body;
+  const { clave, nombre, ubicacion, estado, usuario_id } = req.body;
 
-  if (!nombre || !ubicacion || !estado || !usuario_id) {
+  if ( !clave || !nombre || !ubicacion || !estado || !usuario_id) {
     return res.status(400).json({ message: 'Por favor, proporcione nombre, ubicacion, estado y usuario_id' });
   }
 
-  const update = { nombre, ubicacion, estado, usuario_id };
+  const update = { clave, nombre, ubicacion, estado, usuario_id };
 
   try {
     const updatedDispositivo = await DispositivoModel.findByIdAndUpdate(id, update, { new: true });

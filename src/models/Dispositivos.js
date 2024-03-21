@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const dispositivoSchema = new mongoose.Schema({
+  clave: {
+    type: String,
+    required: true
+  },
   nombre: { 
     type: String, 
     required: true 
