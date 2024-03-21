@@ -192,4 +192,33 @@ router.put('/usuarios/datos/:id', (req, res) => {
 });
 
 
+// Añadir dispositivo a un usuario
+router.post('/usuarios/:id/dispositivos/:dispositivoId', async (req, res) => {
+    const { id, dispositivoId } = req.params;
+  
+    try {
+      // Verificar si el usuario existe
+      const usuario = await Usuario.findById(id);
+      if (!usuario) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      // Verificar si el dispositivo existe
+      const dispositivo = await Dispositivo.findById(dispositivoId);
+      if (!dispositivo) {
+        return res.status(404).json({ message: 'Dispositivo no encontrado' });
+      }
+  
+      // Añadir el ID del dispositivo al arreglo de dispositivos del usuario
+      usuario.dispositivos.push(dispositivoId);
+  
+      // Guardar el usuario actualizado en la base de datos
+      await usuario.save();
+  
+      res.json({ message: 'Dispositivo añadido al usuario correctamente' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al añadir dispositivo al usuario', error: error.message });
+    }
+  });
+  
 module.exports=router
