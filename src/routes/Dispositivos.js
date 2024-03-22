@@ -27,6 +27,25 @@ router.get('/dispositivo/:id', async (req, res) => {
   }
 });
 
+// Saber si un dispositivo exoste por su clave
+router.get('/dispositivo/clave/:clave', async (req, res) => {
+  const clave = req.params.clave;
+
+  try {
+    // Buscar el dispositivo por su clave
+    const dispositivo = await DispositivoModel.findOne({ clave });
+
+    if (!dispositivo) {
+      return res.json({ exists: false, message: 'Dispositivo no encontrado' });
+    }
+
+    res.json({ exists: true, dispositivo });
+  } catch (error) {
+    res.status(500).json({ message: 'Error obteniendo dispositivo por clave', error: error.message });
+  }
+});
+
+
 // Agregar un nuevo dispositivo
 router.post('/dispositivo', async (req, res) => {
   const { clave,nombre, ubicacion, estado, usuario_id } = req.body;
