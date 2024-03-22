@@ -271,7 +271,7 @@ router.get('/usuarios/buscar/:query', async (req, res) => {
 
 
 // Obtener todos los usuarios con al menos un dispositivo
-router.get('/usuarios/condispositivos', async (req, res) => {
+router.get('/us/usuarioscondispositivos', async (req, res) => {
     try {
         // Buscar usuarios que tengan al menos un elemento en el arreglo de dispositivos
         const usuariosConDispositivos = await esquema.find({ dispositivos: { $exists: true, $not: { $size: 0 } } });
