@@ -215,6 +215,28 @@ router.post('/usuarios/anadirdispositivos', async (req, res) => {
         res.status(500).json({ message: 'Error al añadir dispositivo al usuario', error: error.message });
     }
 });
+// Eliminar dispositivo a un usuario
+router.post('/usuarios/eliminardispositivo', async (req, res) => {
+    const { idUsuario, idDispositivo } = req.body;
+
+    try {
+        // Verificar si el usuario existe en la base de datos
+        const usuario = await esquema.findById(idUsuario);
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        // Eliminar el dispositivo del array de dispositivos del usuario
+        usuario.dispositivos = usuario.dispositivos.filter(dispositivoId => dispositivoId !== idDispositivo);
+
+        // Guardar el usuario actualizado en la base de datos
+        await usuario.save();
+
+        res.json({ message: 'Dispositivo eliminado del usuario correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar dispositivo del usuario', error: error.message });
+    }
+});
 
   
 module.exports=router
