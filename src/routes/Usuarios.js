@@ -247,14 +247,15 @@ router.post('/usuarios/eliminardispositivo', async (req, res) => {
     }
 });
 // Buscar usuario por nombre o correo electrónico
-router.get('/usuarios/buscar', async (req, res) => {
-    const { query } = req.query;
+// Buscar usuario por nombre o correo electrónico
+router.get('/usuarios/buscar/:query', async (req, res) => {
+    const { query } = req.params;
 
     try {
         // Buscar usuarios que coincidan con el nombre o correo electrónico
         const usuarios = await esquema.find({
             $or: [
-                { nombre: { $regex: query, $options: 'i' } }, // Búsqueda por nombre (insensible a mayúsculas y minúsculas)
+                { nombre_completo: { $regex: query, $options: 'i' } }, // Búsqueda por nombre (insensible a mayúsculas y minúsculas)
                 { correo: { $regex: query, $options: 'i' } } // Búsqueda por correo electrónico (insensible a mayúsculas y minúsculas)
             ]
         });
@@ -264,5 +265,6 @@ router.get('/usuarios/buscar', async (req, res) => {
         res.status(500).json({ message: 'Error al buscar usuarios', error: error.message });
     }
 });
+
   
 module.exports=router
