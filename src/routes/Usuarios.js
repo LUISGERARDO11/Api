@@ -257,7 +257,7 @@ router.get('/usuarios/buscar/:query', async (req, res) => {
                 { nombre_completo: { $regex: query, $options: 'i' } }, // Búsqueda por nombre (insensible a mayúsculas y minúsculas)
                 { correo: { $regex: query, $options: 'i' } } // Búsqueda por correo electrónico (insensible a mayúsculas y minúsculas)
             ]
-        }).select('-pregunta_secreta -respuesta_secreta -token_acceso -fecha_registro');
+        }).select('-contrasenia -pregunta_secreta -respuesta_secreta -token_acceso -fecha_registro');
 
         if (usuario) {
             res.json({ exists: true, usuario });
