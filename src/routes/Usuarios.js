@@ -271,7 +271,7 @@ router.get('/usuarios/buscar/:query', async (req, res) => {
 
 
 // Método de enrutamiento para obtener usuarios con dispositivos
-router.get('/usuarios/condispositivos', async (req, res) => {
+router.get('/usuarios/con-dispositivos', async (req, res) => {
     try {
         // Obtener todos los usuarios
         const usuarios = await esquema.find();
