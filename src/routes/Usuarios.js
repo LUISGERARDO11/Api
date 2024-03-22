@@ -227,7 +227,7 @@ router.post('/usuarios/eliminardispositivo', async (req, res) => {
         }
 
         // Eliminar el dispositivo del array de dispositivos del usuario
-        usuario.dispositivos = usuario.dispositivos.filter(dispositivoId => dispositivoId !== idDispositivo);
+        usuario.dispositivos = usuario.dispositivos.filter(dispositivo => dispositivo.$oid !== idDispositivo);
 
         // Guardar el usuario actualizado en la base de datos
         await usuario.save();
@@ -237,6 +237,7 @@ router.post('/usuarios/eliminardispositivo', async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar dispositivo del usuario', error: error.message });
     }
 });
+
 
   
 module.exports=router
