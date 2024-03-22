@@ -271,27 +271,14 @@ router.get('/usuarios/buscar/:query', async (req, res) => {
 
 
 // Método de enrutamiento para obtener usuarios con dispositivos
-router.get('/usuarios/con-dispositivos', async (req, res) => {
+router.get('/usuarios/condispositivos', async (req, res) => {
     try {
-        // Obtener todos los usuarios
-        const usuarios = await esquema.find();
-
-        // Filtrar usuarios que tienen al menos un dispositivo
-        const usuariosConDispositivos = usuarios.filter(usuario => usuario.dispositivos.length > 0);
-
-        // Mapear los usuarios filtrados para obtener solo la información necesaria
-        const usuariosFiltrados = usuariosConDispositivos.map(usuario => {
-            return {
-                id: usuario._id,
-                nombre: usuario.nombre_completo,
-                dispositivos: usuario.dispositivos
-            };
-        });
-
-        res.json(usuariosFiltrados);
+        const usuariosConDispositivos = await esquema.find({ dispositivos: { $exists: true, $not: { $size: 0 } } }, '_id nombre_completo dispositivos');
+        res.json(usuariosConDispositivos);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener usuarios con dispositivos', error: error.message });
     }
 });
+
 
 module.exports=router
