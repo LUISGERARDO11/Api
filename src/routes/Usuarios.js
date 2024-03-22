@@ -231,8 +231,11 @@ router.post('/usuarios/eliminardispositivo', async (req, res) => {
             return res.status(404).json({ message: 'El dispositivo no está asociado a este usuario' });
         }
 
+        // Convertir los ObjectID a cadenas para comparar
+        const idDispositivoStr = idDispositivo.toString();
+
         // Eliminar el dispositivo del array de dispositivos del usuario
-        usuario.dispositivos = usuario.dispositivos.filter(dispositivo => dispositivo !== idDispositivo);
+        usuario.dispositivos = usuario.dispositivos.filter(dispositivo => dispositivo.toString() !== idDispositivoStr);
 
         // Guardar el usuario actualizado en la base de datos
         await usuario.save();
@@ -243,6 +246,7 @@ router.post('/usuarios/eliminardispositivo', async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar dispositivo del usuario', error: error.message });
     }
 });
+
 
 
 
