@@ -1,7 +1,23 @@
 const express = require('express');
+const mqtt = require('mqtt'); 
 const DispositivoModel = require('../models/Dispositivos'); // Importa el modelo Dispositivo si está definido en otro archivo
 
+
+
 const router = express.Router();
+
+
+// Conexión al servidor MQTT
+
+// Credenciales de acceso a HiveMQ
+const username = 'hivemq.webclient.1711220869556';
+const password = 'B37H,C@fm&:PtFi8Uc9d"';
+
+// Configuración del cliente MQTT con las credenciales de acceso
+const mqttClient = mqtt.connect('mqtt://broker.hivemq.com', {
+  username: username,
+  password: password
+});
 
 // Obtener todos los dispositivos
 router.get('/dispositivo', async (req, res) => {
@@ -99,6 +115,26 @@ router.delete('/dispositivo/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error eliminando dispositivo' });
   }
+});
+
+
+//Controlar el dispositivo
+router.post('/control/enviarmensaje', (req, res) => {
+  const { mensaje } = req.body;
+
+  if (!mensaje) {
+    return res.status(400).json({ message: 'Por favor, proporciona un mensaje' });
+  }
+
+  // Publicar el mensaje en el tema "control-led"
+  mqttClient.publish('control-led', mensaje, (error) => {
+    if (error) {
+      console.error('Error al enviar mensaje MQTT:', error);
+      return res.status(500).json({ message: 'Error al enviar mensaje MQTT' });
+    }
+    console.log('Mensaje MQTT enviado con éxito:', mensaje);
+    res.status(200).json({ message: 'Mensaje MQTT enviado con éxito' });
+  });
 });
 
 module.exports = router;
