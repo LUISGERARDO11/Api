@@ -30,7 +30,7 @@ router.post('/producto', async (req, res) => {
   
     try {
       // Validación de campos obligatorios
-      const requiredFields = ['nombre_producto', 'descripcion', 'color', 'precio_venta', 'costo_produccion', 'stock_disponible'];
+      const requiredFields = ['nombre_producto', 'descripcion', 'color', 'precio_venta', 'costo_produccion', 'stock_disponible', 'imagen'];
       for (const field of requiredFields) {
         if (!productoData.hasOwnProperty(field)) {
           return res.status(400).json({ message: `El campo ${field} es obligatorio.` });
@@ -43,7 +43,8 @@ router.post('/producto', async (req, res) => {
           typeof productoData.color !== 'string' || 
           typeof productoData.precio_venta !== 'number' || 
           typeof productoData.costo_produccion !== 'number' || 
-          typeof productoData.stock_disponible !== 'number') {
+          typeof productoData.stock_disponible !== 'number' ||
+          typeof productoData.imagen !== 'string' ) {
         return res.status(400).json({ message: 'Los tipos de datos de los campos son incorrectos.' });
       }
   
