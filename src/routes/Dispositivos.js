@@ -126,6 +126,11 @@ router.post('/control/enviarmensaje', (req, res) => {
     return res.status(400).json({ message: 'Por favor, proporciona un mensaje' });
   }
 
+  // Verificar la conexión MQTT
+  if (!mqttClient.connected) {
+    return res.status(500).json({ message: 'Error: Conexión MQTT no disponible' });
+  }
+
   // Publicar el mensaje en el tema "control-led"
   mqttClient.publish('control-led', mensaje, (error) => {
     if (error) {
@@ -136,5 +141,6 @@ router.post('/control/enviarmensaje', (req, res) => {
     res.status(200).json({ message: 'Mensaje MQTT enviado con éxito' });
   });
 });
+
 
 module.exports = router;
