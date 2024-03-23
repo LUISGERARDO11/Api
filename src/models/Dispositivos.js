@@ -9,10 +9,6 @@ const dispositivoSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  ubicacion: {
-    type: String,
-    required: true
-  },
   estado: {
     type: String,
     required: true,
