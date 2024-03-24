@@ -117,6 +117,32 @@ router.delete('/dispositivo/:id', async (req, res) => {
   }
 });
 
+// Método POST para actualizar el estado de un dispositivo por su _id
+router.post('/control/actualizarestado/:id', async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  // Verificar que el estado se haya proporcionado
+  if (!estado) {
+    return res.status(400).json({ message: 'Por favor, proporcione el nuevo estado' });
+  }
+
+  try {
+    // Actualizar solo el estado del dispositivo
+    const updatedDispositivo = await DispositivoModel.findByIdAndUpdate(id, { estado }, { new: true });
+
+    // Verificar si el dispositivo existe
+    if (!updatedDispositivo) {
+      return res.status(404).json({ message: 'Dispositivo no encontrado' });
+    }
+
+    // Enviar el dispositivo actualizado como respuesta
+    res.json(updatedDispositivo);
+  } catch (error) {
+    // Manejar errores
+    res.status(500).json({ message: 'Error actualizando el estado del dispositivo' });
+  }
+});
 
 //Controlar el dispositivo
 router.post('/control/enviarmensaje', (req, res) => {
