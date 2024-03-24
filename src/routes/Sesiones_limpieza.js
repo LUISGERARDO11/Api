@@ -45,4 +45,32 @@ router.delete('/sesiones_limpieza/:id', async (req, res) => {
   }
 });
 
+// Ruta para obtener la última sesión de limpieza de un dispositivo por su clave
+router.get('/sesiones_limpieza/ultima/:claveDispositivo', async (req, res) => {
+    const { claveDispositivo } = req.params;
+  
+    try {
+      // Buscar la última sesión de limpieza del dispositivo por su clave
+      const ultimaSesion = await SesionLimpieza.findOne({ clave_dispositivo: claveDispositivo })
+        .sort({ fecha_inicio: -1 }); // Ordenar por fecha de inicio descendente para obtener la última sesión
+  
+      // Verificar si se encontró alguna sesión
+      if (!ultimaSesion) {
+        return res.status(404).json({ message: 'No se encontró ninguna sesión de limpieza para el dispositivo dado' });
+      }
+  
+      // Verificar si la sesión está completa
+      if (!ultimaSesion.fecha_fin || !ultimaSesion.duracion || !ultimaSesion.resultado) {
+        // Si alguno de estos campos es nulo, la sesión no está completa
+        return res.json({ idSesion: ultimaSesion._id });
+      } else {
+        // Si todos los campos están presentes, la sesión está completa
+        return res.status(404).json({ message: 'La última sesión de limpieza del dispositivo está completa' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener la última sesión de limpieza del dispositivo', error: error.message });
+    }
+  });
+  
+
 module.exports = router;
