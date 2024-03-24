@@ -71,6 +71,41 @@ router.get('/sesiones_limpieza/ultima/:claveDispositivo', async (req, res) => {
       res.status(500).json({ message: 'Error al obtener la última sesión de limpieza del dispositivo', error: error.message });
     }
   });
+  // Ruta para actualizar el resultado y los detalles de una sesión de limpieza
+router.post('/sesiones_limpieza/finalizar', async (req, res) => {
+    const { idSesion, resultado } = req.body;
+  
+    try {
+      // Buscar la sesión de limpieza por su ID
+      const sesion = await SesionLimpieza.findById(idSesion);
+  
+      // Verificar si se encontró la sesión
+      if (!sesion) {
+        return res.status(404).json({ message: 'No se encontró la sesión de limpieza' });
+      }
+  
+      // Verificar si la sesión ya tiene una fecha de finalización
+      if (sesion.fecha_fin) {
+        return res.status(400).json({ message: 'La sesión ya ha sido completada' });
+      }
+  
+      // Calcular la duración de la sesión en minutos
+      const fechaActual = new Date();
+      const diferenciaMinutos = Math.round((fechaActual - sesion.fecha_inicio) / (1000 * 60));
+      
+      // Actualizar los campos de resultado, fecha_fin y duracion
+      sesion.resultado = resultado;
+      sesion.fecha_fin = fechaActual;
+      sesion.duracion = diferenciaMinutos;
+  
+      // Guardar los cambios en la base de datos
+      await sesion.save();
+  
+      res.json({ message: 'Se actualizó correctamente la sesión de limpieza', sesion: sesion });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al actualizar la sesión de limpieza', error: error.message });
+    }
+  });
   
 
 module.exports = router;
