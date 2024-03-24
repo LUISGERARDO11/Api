@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const mqtt = require('mqtt');
 
 require('dotenv').config();
 const cors = require('cors');
@@ -47,6 +48,12 @@ app.use('/api', dispositivoRoutes);
 app.use('/api', sesionesRoutes);
 app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
+});
+
+const client = mqtt.connect('mqtt://broker.emqx.io');
+// Manejador de eventos para cuando el cliente se conecta
+client.on('connect', function () {
+  console.log('Conexión exitosa al broker MQTT');
 });
 
 // Función para enviar correo electrónico
@@ -101,6 +108,21 @@ app.post('/enviarcorreo', async (req, res) => {
     console.error('Error al enviar correo electrónico:', error);
     res.status(500).json({ error: 'Error interno del servidor', error });
   }
+});
+
+// Ruta para publicar un mensaje en el tópico MQTT
+app.post('/publicarmensaje', function (req, res) {
+  const { topico, mensaje } = req.body;
+
+  if (!topico || !mensaje) {
+      return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+
+  // Publica un mensaje en el tópico especificado
+  client.publish(topico, mensaje);
+  console.log('Mensaje publicado en el tópico', topico);
+
+  res.status(200).json({ message: 'Mensaje publicado correctamente' });
 });
 
 // Conexión a MongoDB
