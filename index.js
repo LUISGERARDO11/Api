@@ -11,6 +11,7 @@ const contactoRoutes = require('./src/routes/Contactos');
 const productoRoutes = require('./src/routes/Productos');
 const politicaRoutes = require('./src/routes/Politicas');
 const dispositivoRoutes = require('./src/routes/Dispositivos');
+const sesionesRoutes = require('./src/routes/Sesiones_limpieza');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use('/api', productoRoutes);
 app.use('/api', politicaRoutes);
 app.use('/api', dispositivoRoutes);
 
+app.use('/api', sesionesRoutes);
 app.get('/', (req, res) => {
   res.json({ "response": "esto es mi primer servidor" });
 });
