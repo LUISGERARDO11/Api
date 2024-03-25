@@ -293,25 +293,6 @@ router.get('/us/usuarioscondispositivos', async (req, res) => {
     }
 });
 
-// Endpoint para obtener los datos del usuario actual basados en el token
-router.get('/usuariosme/me', authMiddleware, async (req, res) => {
-    try {
-        // Extraer el ID del usuario del token decodificado
-        const usuarioId = req.usuarioId;
-
-        // Buscar el usuario por ID
-        const usuario = await esquema.findById(usuarioId).select('-contrasenia'); // No enviar la contraseña en la respuesta
-
-        // Verificar si se encontró un usuario con el ID proporcionado
-        if (usuario) {
-            res.json(usuario);
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los datos del usuario', error: error.message });
-    }
-});
 
 
 module.exports=router
