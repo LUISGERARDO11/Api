@@ -1,8 +1,6 @@
 const express=require('express')
 const bcrypt = require('bcrypt');
 const esquema=require('../models/Usuarios')
-const jwt = require('jsonwebtoken'); // Importa el módulo jwt para trabajar con tokens
-const authMiddleware = require('../middlewares/authMiddleware'); // Middleware para validar el token
 
 const router=express.Router()
 
@@ -292,7 +290,6 @@ router.get('/us/usuarioscondispositivos', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener usuarios con dispositivos', error: error.message });
     }
 });
-
 
 
 module.exports=router
