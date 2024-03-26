@@ -115,8 +115,37 @@ router.post('/usuarios/verify', (req, res) => {
 });
 
   
-// Login (no requiere token JWT)
+// Login movil
 router.post('/usuarios/login', async (req, res) => {
+    const { correo, contrasenia } = req.body;
+
+    try {
+        // Buscar el usuario por correo electrónico
+        const usuario = await esquema.findOne({ correo });
+
+        if (usuario) {
+            // Comparar la contraseña proporcionada con la contraseña encriptada almacenada
+            const contraseñaValida = await bcrypt.compare(contrasenia, usuario.contrasenia);
+
+            if (contraseñaValida) {
+                // La contraseña es válida, inicio de sesión exitoso
+                res.json({ message: 'Inicio de sesión exitoso', usuario });
+            } else {
+                // Contraseña incorrecta
+                res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos' });
+            }
+        } else {
+            // No se encontró ningún usuario con el correo electrónico proporcionado
+            res.status(404).json({ message: 'Correo electrónico o contraseña incorrectos' });
+        }
+    } catch (error) {
+        // Error al buscar usuario en la base de datos
+        res.status(500).json({ message: 'Error al buscar usuario', error });
+    }
+});
+
+// Login (no requiere token JWT)
+router.post('/usuarios/login2', async (req, res) => {
     const { correo, contrasenia } = req.body;
     try {
         const usuario = await esquema.findOne({ correo });
