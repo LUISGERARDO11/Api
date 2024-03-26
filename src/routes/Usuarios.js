@@ -1,34 +1,33 @@
 const express=require('express')
 const bcrypt = require('bcrypt');
 const esquema=require('../models/Usuarios')
+const jwt = require("jsonwebtoken");
 
 const router=express.Router()
 
-//crear un usuario
+// Crear un usuario con JWT
 router.post('/usuarios', async (req, res) => {
     try {
-        // Extraer la contraseña del cuerpo de la solicitud
         const { contrasenia, ...userData } = req.body;
+        const hashedPassword = await bcrypt.hash(contrasenia, 10);
 
-        // Encriptar la contraseña
-        const hashedPassword = await bcrypt.hash(contrasenia, 10); // El segundo parámetro es el número de rondas de hashing
-
-        // Crear un nuevo objeto usuario con la contraseña encriptada
         const usuarioNuevo = new esquema({
-            ...userData, // Utilizamos el resto de los datos del cuerpo de la solicitud
-            contrasenia: hashedPassword // Contraseña encriptada
+            ...userData,
+            contrasenia: hashedPassword
         });
 
-        // Guardar el usuario en la base de datos
         const usuarioGuardado = await usuarioNuevo.save();
-        res.json(usuarioGuardado);
+
+        // Firmar un token JWT y adjuntarlo en la respuesta
+        const token = jwt.sign({ usuarioId: usuarioGuardado._id }, process.env.JWT_SECRET);
+        res.header('auth-token', token).json(usuarioGuardado);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-//leer usuarios
-router.get('/usuarios', async (req, res) => {
+// Leer usuarios (requiere token JWT)
+router.get('/usuarios', verifyToken, async (req, res) => {
     try {
         const usuarios = await esquema.find({}, '-contrasenia -pregunta_secreta -respuesta_secreta');
         res.json(usuarios);
@@ -116,34 +115,28 @@ router.post('/usuarios/verify', (req, res) => {
 });
 
   
-//Login
+// Login (no requiere token JWT)
 router.post('/usuarios/login', async (req, res) => {
     const { correo, contrasenia } = req.body;
-
     try {
-        // Buscar el usuario por correo electrónico
         const usuario = await esquema.findOne({ correo });
-
         if (usuario) {
-            // Comparar la contraseña proporcionada con la contraseña encriptada almacenada
             const contraseñaValida = await bcrypt.compare(contrasenia, usuario.contrasenia);
-
             if (contraseñaValida) {
-                // La contraseña es válida, inicio de sesión exitoso
-                res.json({ message: 'Inicio de sesión exitoso', usuario });
+                // La contraseña es válida, firmar un token JWT y adjuntarlo en la respuesta
+                const token = jwt.sign({ usuarioId: usuario._id }, process.env.JWT_SECRET);
+                res.header('auth-token', token).json({ message: 'Inicio de sesión exitoso', usuario });
             } else {
-                // Contraseña incorrecta
                 res.status(401).json({ message: 'Correo electrónico o contraseña incorrectos' });
             }
         } else {
-            // No se encontró ningún usuario con el correo electrónico proporcionado
             res.status(404).json({ message: 'Correo electrónico o contraseña incorrectos' });
         }
     } catch (error) {
-        // Error al buscar usuario en la base de datos
-        res.status(500).json({ message: 'Error al buscar usuario', error });
+        res.status(500).json({ message: 'Error al iniciar sesión', error });
     }
 });
+
 
   // Eliminar usuario por ID
 router.delete('/usuarios/:id', (req, res) => {
@@ -290,6 +283,21 @@ router.get('/us/usuarioscondispositivos', async (req, res) => {
         res.status(500).json({ message: 'Error al obtener usuarios con dispositivos', error: error.message });
     }
 });
+
+// Middleware para verificar el token JWT
+function verifyToken(req, res, next) {
+    const token = req.header('auth-token');
+    if (!token) return res.status(401).json({ message: 'Acceso denegado. Token no proporcionado' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.usuarioId = decoded.usuarioId;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: 'Token inválido' });
+    }
+}
+
 
 
 module.exports=router
