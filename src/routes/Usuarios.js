@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const router=express.Router()
 
 // Crear un usuario con JWT
-router.post('/usuarios', async (req, res) => {
+router.post('/usuarios2', async (req, res) => {
     try {
         const { contrasenia, ...userData } = req.body;
         const hashedPassword = await bcrypt.hash(contrasenia, 10);
@@ -21,6 +21,29 @@ router.post('/usuarios', async (req, res) => {
         // Firmar un token JWT y adjuntarlo en la respuesta
         const token = jwt.sign({ usuarioId: usuarioGuardado._id }, process.env.JWT_SECRET);
         res.header('auth-token', token).json(usuarioGuardado);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+//crear un usuario
+router.post('/usuarios', async (req, res) => {
+    try {
+        // Extraer la contraseña del cuerpo de la solicitud
+        const { contrasenia, ...userData } = req.body;
+
+        // Encriptar la contraseña
+        const hashedPassword = await bcrypt.hash(contrasenia, 10); // El segundo parámetro es el número de rondas de hashing
+
+        // Crear un nuevo objeto usuario con la contraseña encriptada
+        const usuarioNuevo = new esquema({
+            ...userData, // Utilizamos el resto de los datos del cuerpo de la solicitud
+            contrasenia: hashedPassword // Contraseña encriptada
+        });
+
+        // Guardar el usuario en la base de datos
+        const usuarioGuardado = await usuarioNuevo.save();
+        res.json(usuarioGuardado);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
