@@ -140,17 +140,17 @@ router.post('/control/actualizarestado', async (req, res) => {
   }
 });
 
-// Método POST para actualizar la temperatura y humedad de un dispositivo por su _id
+// Método POST para actualizar la temperatura y humedad de un dispositivo por su campo 'clave'
 router.post('/control/actualizartemperaturahumedad', async (req, res) => {
-  const { id, temperatura, humedad } = req.body;
+  const { clave, temperatura, humedad } = req.body;
 
-  if (!id || !temperatura || !humedad) {
-    return res.status(400).json({ message: 'Por favor, proporcione el ID, temperatura y humedad del dispositivo' });
+  if (!clave || !temperatura || !humedad) {
+    return res.status(400).json({ message: 'Por favor, proporcione la clave, temperatura y humedad del dispositivo' });
   }
 
   try {
-    // Actualizar la temperatura y humedad del dispositivo por su _id
-    const updatedDispositivo = await DispositivoModel.findByIdAndUpdate(id, { temperatura, humedad }, { new: true });
+    // Actualizar la temperatura y humedad del dispositivo por su campo 'clave'
+    const updatedDispositivo = await DispositivoModel.findOneAndUpdate({ clave }, { temperatura, humedad }, { new: true });
     
     if (!updatedDispositivo) {
       return res.status(404).json({ message: 'Dispositivo no encontrado' });
